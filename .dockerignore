@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Models (mount separately)
+models/*.pth
+models/*.onnx
+
+# Media and demos
+media/
+
+# Temporary files
+temp/
+*.mp4
+*.avi
+*.mov
+output/
+input/
+
+# Documentation
+*.md
+!README-DOCKER.md
+CONTRIBUTING.md
+LICENSE
+
+# Build files
+*.bat
+mypi.ini
+
+# Test files
+test/
+tests/
+

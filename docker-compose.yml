@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  deep-live-cam:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: deep-live-cam:cpu
+    container_name: deep-live-cam
+    
+    # Volume mounts
+    volumes:
+      # Mount models directory (download models here before running)
+      - ./models:/app/models:ro
+      # Mount input directory for source and target files
+      - ./input:/app/input:ro
+      # Mount output directory for processed results
+      - ./output:/app/output:rw
+      # Optionally mount temporary directory
+      - ./temp:/app/temp:rw
+    
+    # Environment variables
+    environment:
+      - PYTHONUNBUFFERED=1
+      - OMP_NUM_THREADS=4
+      - TF_CPP_MIN_LOG_LEVEL=2
+    
+    # Resource limits (optional, adjust based on your system)
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+        reservations:
+          cpus: '2'
+          memory: 4G
+    
+    # Default command - override when running
+    # Example: docker-compose run deep-live-cam -s /app/input/source.jpg -t /app/input/target.mp4 -o /app/output/result.mp4
+    command: ["--help"]
+    
+    # Prevent container from exiting immediately
+    stdin_open: true
+    tty: true
+
