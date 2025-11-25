@@ -15,6 +15,7 @@ from modules.utilities import (
     is_video,
 )
 from modules.cluster_analysis import find_closest_centroid
+from modules.watermark import watermark_output
 import os
 from collections import deque
 import time
@@ -588,7 +589,19 @@ def process_frames(
 
         # Write the result back to the same frame path
         try:
-            write_success = cv2.imwrite(temp_frame_path, result_frame)
+            # Apply watermarking if enabled
+            if getattr(modules.globals, "enable_watermark", True):
+                result_watermarked = watermark_output(
+                    result_frame,
+                    source_path=source_path,
+                    target_path=modules.globals.target_path,
+                    output_path=temp_frame_path,
+                    user_id=getattr(modules.globals, "watermark_user_id", None)
+                )
+            else:
+                result_watermarked = result_frame
+            
+            write_success = cv2.imwrite(temp_frame_path, result_watermarked)
             if not write_success:
                 print(f"{NAME}: Error: Failed to write processed frame to {temp_frame_path}")
         except Exception as write_e:
@@ -648,9 +661,22 @@ def process_image(source_path: str, target_path: str, output_path: str) -> None:
 
         # Write the result if processing was successful
         if result is not None:
-            write_success = cv2.imwrite(output_path, result)
+            # Apply watermarking if enabled
+            if getattr(modules.globals, "enable_watermark", True):
+                result_watermarked = watermark_output(
+                    result,
+                    source_path=source_path,
+                    target_path=target_path,
+                    output_path=output_path,
+                    user_id=getattr(modules.globals, "watermark_user_id", None)
+                )
+            else:
+                result_watermarked = result
+            
+            write_success = cv2.imwrite(output_path, result_watermarked)
             if write_success:
-                update_status(f"Output image saved to: {output_path}", NAME)
+                watermark_status = "with watermark" if getattr(modules.globals, "enable_watermark", True) else "without watermark"
+                update_status(f"Output image saved {watermark_status} to: {output_path}", NAME)
             else:
                 update_status(f"Error: Failed to write output image to {output_path}", NAME)
         else:

@@ -50,6 +50,8 @@ def parse_args() -> None:
     program.add_argument('--max-memory', help='maximum amount of RAM in GB', dest='max_memory', type=int, default=suggest_max_memory())
     program.add_argument('--execution-provider', help='execution provider', dest='execution_provider', default=['cpu'], choices=suggest_execution_providers(), nargs='+')
     program.add_argument('--execution-threads', help='number of execution threads', dest='execution_threads', type=int, default=suggest_execution_threads())
+    program.add_argument('--watermark-strength', help='watermark strength (0.05-0.2)', dest='watermark_strength', type=float, default=0.1)
+    program.add_argument('--user-id', help='user identifier for traceability', dest='user_id', type=str, default=None)
     program.add_argument('-v', '--version', action='version', version=f'{modules.metadata.name} {modules.metadata.version}')
 
     # register deprecated args
@@ -80,6 +82,8 @@ def parse_args() -> None:
     modules.globals.execution_providers = decode_execution_providers(args.execution_provider)
     modules.globals.execution_threads = args.execution_threads
     modules.globals.lang = args.lang
+    modules.globals.watermark_strength = args.watermark_strength
+    modules.globals.watermark_user_id = args.user_id
 
     #for ENHANCER tumbler:
     if 'face_enhancer' in args.frame_processor:

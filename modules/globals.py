@@ -68,4 +68,10 @@ enable_interpolation: bool = True # Toggle temporal smoothing
 interpolation_weight: float = 0  # Blend weight for current frame (0.0-1.0). Lower=smoother.
 # --- END: Added for Frame Interpolation ---
 
+# --- START: Watermarking Options ---
+enable_watermark: bool = True     # Enable invisible watermarking for traceability
+watermark_strength: float = 0.1   # Watermark strength (0.05-0.2 recommended)
+watermark_user_id: str | None = None  # Optional user identifier for tracking
+# --- END: Watermarking Options ---
+
 # --- END OF FILE globals.py ---
