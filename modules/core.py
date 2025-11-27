@@ -52,6 +52,9 @@ def parse_args() -> None:
     program.add_argument('--execution-threads', help='number of execution threads', dest='execution_threads', type=int, default=suggest_execution_threads())
     program.add_argument('--watermark-strength', help='watermark strength (0.05-0.2)', dest='watermark_strength', type=float, default=0.1)
     program.add_argument('--user-id', help='user identifier for traceability', dest='user_id', type=str, default=None)
+    program.add_argument('--sign', help='enable digital signatures', dest='enable_signing', action='store_true', default=False)
+    program.add_argument('--private-key', help='path to private key for signing', dest='private_key_path', type=str, default=None)
+    program.add_argument('--key-password', help='password for encrypted private key', dest='key_password', type=str, default=None)
     program.add_argument('-v', '--version', action='version', version=f'{modules.metadata.name} {modules.metadata.version}')
 
     # register deprecated args
@@ -84,6 +87,9 @@ def parse_args() -> None:
     modules.globals.lang = args.lang
     modules.globals.watermark_strength = args.watermark_strength
     modules.globals.watermark_user_id = args.user_id
+    modules.globals.enable_signing = args.enable_signing
+    modules.globals.private_key_path = args.private_key_path
+    modules.globals.key_password = args.key_password
 
     #for ENHANCER tumbler:
     if 'face_enhancer' in args.frame_processor:

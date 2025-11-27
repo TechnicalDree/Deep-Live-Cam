@@ -596,7 +596,10 @@ def process_frames(
                     source_path=source_path,
                     target_path=modules.globals.target_path,
                     output_path=temp_frame_path,
-                    user_id=getattr(modules.globals, "watermark_user_id", None)
+                    user_id=getattr(modules.globals, "watermark_user_id", None),
+                    sign=getattr(modules.globals, "enable_signing", False),
+                    private_key_path=getattr(modules.globals, "private_key_path", None),
+                    key_password=getattr(modules.globals, "key_password", None)
                 )
             else:
                 result_watermarked = result_frame
@@ -668,7 +671,10 @@ def process_image(source_path: str, target_path: str, output_path: str) -> None:
                     source_path=source_path,
                     target_path=target_path,
                     output_path=output_path,
-                    user_id=getattr(modules.globals, "watermark_user_id", None)
+                    user_id=getattr(modules.globals, "watermark_user_id", None),
+                    sign=getattr(modules.globals, "enable_signing", False),
+                    private_key_path=getattr(modules.globals, "private_key_path", None),
+                    key_password=getattr(modules.globals, "key_password", None)
                 )
             else:
                 result_watermarked = result

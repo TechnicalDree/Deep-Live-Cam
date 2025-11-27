@@ -74,4 +74,10 @@ watermark_strength: float = 0.1   # Watermark strength (0.05-0.2 recommended)
 watermark_user_id: str | None = None  # Optional user identifier for tracking
 # --- END: Watermarking Options ---
 
+# --- START: Digital Signature Options ---
+enable_signing: bool = False      # Enable digital signatures
+private_key_path: str | None = None  # Path to private key for signing
+key_password: str | None = None   # Password for encrypted private key
+# --- END: Digital Signature Options ---
+
 # --- END OF FILE globals.py ---

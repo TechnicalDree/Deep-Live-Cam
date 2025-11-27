@@ -11,7 +11,6 @@ import time
 from typing import Tuple, Optional, Dict
 import base64
 import modules.globals
-import modules.globals
 
 class DeepfakeWatermark:
     def __init__(self, strength: float = 0.1, block_size: int = 8):
@@ -284,7 +283,10 @@ def watermark_output(image: np.ndarray,
                      source_path: str = None,
                      target_path: str = None,
                      output_path: str = None,
-                     user_id: str = None) -> np.ndarray:
+                     user_id: str = None,
+                     sign: bool = False,
+                     private_key_path: str = None,
+                     key_password: str = None) -> np.ndarray:
     """
     Main function to watermark deepfake output
     
@@ -294,6 +296,9 @@ def watermark_output(image: np.ndarray,
         target_path: Path to target image/video
         output_path: Where the output will be saved
         user_id: Optional user identifier
+        sign: Whether to digitally sign the output
+        private_key_path: Path to private key for signing
+        key_password: Password for encrypted private key
         
     Returns:
         Watermarked image
@@ -319,6 +324,51 @@ def watermark_output(image: np.ndarray,
             watermarker.embed_metadata_exif(watermarked, watermark_data, output_path)
         except:
             pass  # Metadata embedding is optional
+    
+    # Digital signature (if enabled and output path provided)
+    if sign and output_path and private_key_path:
+        try:
+            from modules.digital_signature import DigitalSigner, SignatureManager
+            import cv2
+            
+            # Create signer and load key
+            signer = DigitalSigner(algorithm='RSA')
+            signer.load_private_key(private_key_path, password=key_password)
+            
+            # Encode image to bytes (PNG format for lossless)
+            _, buffer = cv2.imencode('.png', watermarked)
+            image_bytes = buffer.tobytes()
+            
+            # Parse metadata from watermark_data string
+            try:
+                metadata_dict = json.loads(watermark_data)
+            except:
+                metadata_dict = {"watermark_data": watermark_data}
+            
+            # Add signature info to metadata
+            metadata_dict['signed'] = True
+            metadata_dict['key_fingerprint'] = signer.get_public_key_fingerprint()
+            
+            # Create signature
+            signature = signer.sign_data(image_bytes, metadata_dict)
+            
+            # Save signature file
+            SignatureManager.create_signature_file(
+                output_path,
+                signature,
+                metadata_dict,
+                signer.get_public_key_fingerprint()
+            )
+            
+            print(f"✓ Digital signature created: {output_path}.sig")
+            
+        except ImportError:
+            print("Warning: cryptography module not installed. Skipping digital signature.")
+            print("         Install with: pip install cryptography")
+        except FileNotFoundError as e:
+            print(f"Warning: Could not sign - {e}")
+        except Exception as e:
+            print(f"Warning: Digital signature failed - {e}")
     
     return watermarked
 
